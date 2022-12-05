@@ -1,14 +1,14 @@
-const ethers = require("ethers");
-// const solc = require("solc")
-const fs = require("fs-extra");
-require("dotenv").config();
+import { ethers } from "ethers";
+import * as fs from "fs-extra";
+import "dotenv/config";
 
 async function main() {
 	// First, compile this!
 	// And make sure to have your ganache network up!
-	let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
-	let wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+	let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL!);
+	let wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 
+	// ! FOR A BETTER PRIVATE-KEY ENCRYPTION
 	// const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
 	// let wallet = new ethers.Wallet.fromEncryptedJsonSync(
 	//   encryptedJson,
@@ -25,14 +25,13 @@ async function main() {
 	const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
 	console.log("Deploying, please wait...");
 	const contract = await contractFactory.deploy();
-	// const contract = await contractFactory.deploy({ gasPrice: 100000000000 })
 	const deploymentReceipt = await contract.deployTransaction.wait(1);
 	console.log(`Contract deployed to ${contract.address}`);
 
 	let currentFavoriteNumber = await contract.retrieve();
 	console.log(`Current Favorite Number: ${currentFavoriteNumber}`);
 	console.log("Updating favorite number...");
-	let transactionResponse = await contract.store(7);
+	let transactionResponse = await contract.store(22);
 	let transactionReceipt = await transactionResponse.wait();
 	currentFavoriteNumber = await contract.retrieve();
 	console.log(`New Favorite Number: ${currentFavoriteNumber}`);
